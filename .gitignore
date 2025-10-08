@@ -8,3 +8,18 @@ __pycache__/
 .model_config_save.yaml
 model_cfg.yml
 *.whl
+
+# files auto-generated from cmake/make
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+lt_ex_registry.c.inc
+lt_test_registry.c.inc
+sh0_keys.c
+sh0_priv.bin
+sh0_pub.bin
+trezor_crypto/
+
+.direnv
+result

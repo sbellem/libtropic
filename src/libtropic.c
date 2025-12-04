@@ -401,7 +401,8 @@ lt_ret_t lt_get_info_fw_bank(lt_handle_t *h, const lt_bank_id_t bank_id, uint8_t
 }
 
 lt_ret_t lt_session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pkey_index_t pkey_index,
-                          const uint8_t *shipriv, const uint8_t *shipub)
+                          const uint8_t *shipriv, const uint8_t *shipub, const uint8_t *riscv_fw_hash,
+                          const uint8_t *spect_fw_hash)
 {
     if (!h || !stpub || (pkey_index > TR01_PAIRING_KEY_SLOT_INDEX_3) || !shipriv || !shipub) {
         return LT_PARAM_ERR;
@@ -423,7 +424,7 @@ lt_ret_t lt_session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pkey_in
         goto lt_session_start_cleanup;
     }
 
-    ret = lt_in__session_start(h, stpub, pkey_index, shipriv, shipub, &host_eph_keys);
+    ret = lt_in__session_start(h, stpub, pkey_index, shipriv, shipub, &host_eph_keys, riscv_fw_hash, spect_fw_hash);
 
 lt_session_start_cleanup:
     lt_secure_memzero(&host_eph_keys, sizeof(lt_host_eph_keys_t));
@@ -1577,7 +1578,8 @@ lt_ret_t lt_write_whole_I_config(lt_handle_t *h, const struct lt_config_t *confi
 }
 
 lt_ret_t lt_verify_chip_and_start_secure_session(lt_handle_t *h, const uint8_t *shipriv, const uint8_t *shipub,
-                                                 const lt_pkey_index_t pkey_index)
+                                                 const lt_pkey_index_t pkey_index, const uint8_t *riscv_fw_hash,
+                                                 const uint8_t *spect_fw_hash)
 {
     if (!h || !shipriv || !shipub || (pkey_index > TR01_PAIRING_KEY_SLOT_INDEX_3)) {
         return LT_PARAM_ERR;
@@ -1630,7 +1632,7 @@ lt_ret_t lt_verify_chip_and_start_secure_session(lt_handle_t *h, const uint8_t *
         return ret;
     }
 
-    ret = lt_session_start(h, stpub, pkey_index, shipriv, shipub);
+    ret = lt_session_start(h, stpub, pkey_index, shipriv, shipub, riscv_fw_hash, spect_fw_hash);
     if (ret != LT_OK) {
         return ret;
     }

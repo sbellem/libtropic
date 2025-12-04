@@ -162,13 +162,16 @@ lt_ret_t lt_get_info_fw_bank(lt_handle_t *h, const lt_bank_id_t bank_id, uint8_t
  * @param pkey_index  Index of pairing public key
  * @param shipriv     Secure host private key
  * @param shipub      Secure host public key
+ * @param riscv_fw_hash Expected RISCV firmware hash (32 bytes) or NULL to skip check (if supported)
+ * @param spect_fw_hash Expected SPECT firmware hash (32 bytes) or NULL to skip check (if supported)
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get verbose encoding
  * of returned value
  */
 lt_ret_t lt_session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pkey_index_t pkey_index,
-                          const uint8_t *shipriv, const uint8_t *shipub);
+                          const uint8_t *shipriv, const uint8_t *shipub, const uint8_t *riscv_fw_hash,
+                          const uint8_t *spect_fw_hash);
 
 /**
  * @brief Aborts encrypted secure session between TROPIC01 and host MCU
@@ -708,13 +711,16 @@ lt_ret_t lt_write_whole_I_config(lt_handle_t *h, const struct lt_config_t *confi
  * @param shipriv     Host's private pairing key for the slot `pkey_index`
  * @param shipub      Host's public pairing key for the slot `pkey_index`
  * @param pkey_index  Pairing key index
+ * @param riscv_fw_hash Expected RISCV firmware hash (32 bytes) or NULL to skip check (if supported)
+ * @param spect_fw_hash Expected SPECT firmware hash (32 bytes) or NULL to skip check (if supported)
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get verbose encoding
  * of returned value
  */
 lt_ret_t lt_verify_chip_and_start_secure_session(lt_handle_t *h, const uint8_t *shipriv, const uint8_t *shipub,
-                                                 const lt_pkey_index_t pkey_index);
+                                                 const lt_pkey_index_t pkey_index, const uint8_t *riscv_fw_hash,
+                                                 const uint8_t *spect_fw_hash);
 
 /**
  * @brief Prints bytes in hex format to the given output buffer.

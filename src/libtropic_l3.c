@@ -63,7 +63,8 @@ lt_ret_t lt_out__session_start(lt_handle_t *h, const lt_pkey_index_t pkey_index,
 }
 
 lt_ret_t lt_in__session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pkey_index_t pkey_index,
-                              const uint8_t *shipriv, const uint8_t *shipub, lt_host_eph_keys_t *host_eph_keys)
+                              const uint8_t *shipriv, const uint8_t *shipub, lt_host_eph_keys_t *host_eph_keys,
+                              const uint8_t *riscv_fw_hash, const uint8_t *spect_fw_hash)
 {
     if (!h || !stpub || (pkey_index > TR01_PAIRING_KEY_SLOT_INDEX_3) || !shipriv || !shipub || !host_eph_keys) {
         return LT_PARAM_ERR;
@@ -236,7 +237,21 @@ lt_ret_t lt_in__session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pke
         goto exit;
     }
 
-    ret = lt_aesgcm_decrypt(h->l3.crypto_ctx, h->l3.decryption_IV, sizeof(h->l3.decryption_IV), hash, sizeof(hash),
+    // Prepare Associated Data: HSK_HASH || RISCV_FW_HASH || SPECT_FW_HASH
+    uint8_t ad[LT_SHA256_DIGEST_LENGTH + 32 + 32]; // 32 + 32 + 32 = 96 bytes
+    memcpy(ad, hash, LT_SHA256_DIGEST_LENGTH);
+    if (riscv_fw_hash) {
+        memcpy(ad + LT_SHA256_DIGEST_LENGTH, riscv_fw_hash, 32);
+    } else {
+        memset(ad + LT_SHA256_DIGEST_LENGTH, 0, 32);
+    }
+    if (spect_fw_hash) {
+        memcpy(ad + LT_SHA256_DIGEST_LENGTH + 32, spect_fw_hash, 32);
+    } else {
+        memset(ad + LT_SHA256_DIGEST_LENGTH + 32, 0, 32);
+    }
+
+    ret = lt_aesgcm_decrypt(h->l3.crypto_ctx, h->l3.decryption_IV, sizeof(h->l3.decryption_IV), ad, sizeof(ad),
                             p_rsp->t_tauth, sizeof(p_rsp->t_tauth), (uint8_t *)"", 0);
     if (ret != LT_OK) {
         goto exit;

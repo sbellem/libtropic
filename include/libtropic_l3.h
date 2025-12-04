@@ -59,10 +59,13 @@ lt_ret_t lt_out__session_start(lt_handle_t *h, const lt_pkey_index_t pkey_index,
  * @param shipub         Secure host public key
  * @param host_eph_keys  Host MCU ephemeral keys, must be filled by lt_out__session_start() and used to finish secure
  * session establishment.
+ * @param riscv_fw_hash Expected RISCV firmware hash (32 bytes) or NULL to skip check (if supported)
+ * @param spect_fw_hash Expected SPECT firmware hash (32 bytes) or NULL to skip check (if supported)
  * @return               LT_OK if success, otherwise returns other error code.
  */
 lt_ret_t lt_in__session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pkey_index_t pkey_index,
-                              const uint8_t *shipriv, const uint8_t *shipub, lt_host_eph_keys_t *host_eph_keys);
+                              const uint8_t *shipriv, const uint8_t *shipub, lt_host_eph_keys_t *host_eph_keys,
+                              const uint8_t *riscv_fw_hash, const uint8_t *spect_fw_hash);
 
 /**
  * @brief Encodes Ping command payload.
